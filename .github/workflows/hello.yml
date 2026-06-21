@@ -1,0 +1,27 @@
+name: Hello CI/CD
+
+# Bila workflow ni akan run.
+# push: setiap kali ada commit yang di-push.
+on: push
+
+jobs:
+  greet:
+    # Mesin yang akan run job ni. ubuntu-latest = runner percuma yang disediakan GitHub.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: ambil/clone kod repo ni ke dalam runner.
+      # Tanpa step ni, runner kosong takde fail apa-apa pun.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: jalankan command shell biasa.
+      - name: Say hello
+        run: echo "Hello dari GitHub Actions! Workflow ni berjaya run."
+
+      # Step 3: tunjuk sikit info tentang runner — berguna untuk debug nanti.
+      - name: Show runner info
+        run: |
+          echo "OS: $(uname -a)"
+          echo "Tarikh: $(date)"
+          echo "Folder kerja: $(pwd)"
