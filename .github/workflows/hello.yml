@@ -25,3 +25,30 @@ jobs:
           echo "OS: $(uname -a)"
           echo "Tarikh: $(date)"
           echo "Folder kerja: $(pwd)"
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Pasang .NET SDK kat runner. Runner ubuntu-latest kekadang dah ada dotnet,
+      # tapi guna action ni untuk pastikan versi yang betul-betul kita nak.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Download semua NuGet package yang diperlukan (xunit, test sdk, dll).
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Compile semua project (src + test).
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # Run semua test dalam test/HelloApp.Tests. Kalau ada test fail,
+      # step ni (dan job ni) akan fail — itu yang buat CI berguna.
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release --verbosity normal

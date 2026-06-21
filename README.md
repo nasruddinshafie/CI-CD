@@ -28,8 +28,31 @@ Local files ni tak akan trigger apa-apa sampai kau push ke GitHub.
 - `actions/checkout@v4` — "action" siap pakai dari GitHub Marketplace untuk clone kod repo masuk runner. Tanpa ni, runner takde akses kod kau langsung
 - `run:` — jalankan command shell macam biasa kat terminal
 
-## Next step (bila ni dah jalan)
+## Step 3: build & test sebenar (.NET)
 
-- Tambah satu lagi job yang betul-betul build/test sesuatu (contoh script Python/Node ringkas)
+Workflow ni sekarang ada job kedua, `build-and-test`, yang run dalam runner berasingan
+secara **parallel** dengan job `greet` (dua job dalam satu workflow run serentak,
+melainkan kau set `needs:` untuk buat dia tunggu).
+
+Struktur kod:
+- `src/HelloApp/` — console app ringkas dengan satu function `Calculator.Add`
+- `test/HelloApp.Tests/` — xunit test untuk function tu
+- `CiCdLearning.sln` — solution file supaya `dotnet restore/build/test` tau projek mana nak proses
+
+Steps job ni:
+1. `actions/setup-dotnet@v4` — pasang .NET SDK versi yang ditetapkan (8.0.x)
+2. `dotnet restore` — download NuGet packages
+3. `dotnet build` — compile
+4. `dotnet test` — run semua test. **Kalau test fail, job ni fail** — sebab inilah CI berguna: stop kod rosak sebelum sampai jauh
+
+## Cuba sendiri
+
+Pecahkan test sengaja (contoh tukar `Assert.Equal(5, ...)` jadi `Assert.Equal(99, ...)`),
+push, dan tengok job `build-and-test` jadi merah kat tab Actions. Lepas tu betulkan balik
+dan push semula — faham macam tu lah CI "tangkap" kesilapan secara automatik.
+
+## Next step
+
 - Cuba `on: pull_request` pula, faham beza dengan `push`
+- Tambah `needs:` untuk buat job bergantung kat job lain (contoh build-and-test kena pass dulu sebelum job deploy)
 - Tambah `if:` condition kat satu step
