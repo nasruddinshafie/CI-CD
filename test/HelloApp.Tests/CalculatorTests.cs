@@ -9,7 +9,7 @@ public class CalculatorTests
     public void Add_ReturnsSum()
     {
         var result = Calculator.Add(2, 3);
-        Assert.Equal(99, result);
+        Assert.Equal(5, result);
     }
 
     [Theory]
